@@ -25,11 +25,11 @@ RUN addgroup -S giraffemail && adduser -S giraffemail -G giraffemail
 WORKDIR /app
 COPY --from=builder /giraffemail /usr/local/bin/giraffemail
 COPY config.docker.yaml /etc/giraffemail/config.yaml
-RUN mkdir -p /data && chown giraffemail:giraffemail /data
+COPY scripts/docker-entrypoint.sh /docker-entrypoint.sh
+RUN mkdir -p /data && chown giraffemail:giraffemail /data && chmod +x /docker-entrypoint.sh
 USER giraffemail
 EXPOSE 9191
 VOLUME ["/data"]
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
   CMD wget -qO- http://127.0.0.1:9191/healthz || exit 1
-ENTRYPOINT ["giraffemail"]
-CMD ["serve", "--config", "/etc/giraffemail/config.yaml"]
+ENTRYPOINT ["/docker-entrypoint.sh"]

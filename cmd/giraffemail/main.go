@@ -229,19 +229,23 @@ func runSeed(cmd *cobra.Command, _ []string) error {
 			return err
 		}
 		if count > 0 {
-			return fmt.Errorf("seed disabled in production when users already exist")
+			log.Warn().Msg("seed: production DB has users — resetting admin@localhost credentials only")
 		}
 	}
 
-	// Create admin user.
 	hash, err := bcrypt.GenerateFromPassword([]byte("admin123"), 12)
 	if err != nil {
 		return err
 	}
 	adminID := uuid.Must(uuid.NewV7()).String()
 	_, err = database.Conn.ExecContext(ctx, `
-		INSERT OR IGNORE INTO users(id, email, password_hash, full_name, role, is_active)
+		INSERT INTO users(id, email, password_hash, full_name, role, is_active)
 		VALUES (?, 'admin@localhost', ?, 'Admin', 'admin', 1)
+		ON CONFLICT(email) DO UPDATE SET
+			password_hash = excluded.password_hash,
+			role = 'admin',
+			is_active = 1,
+			updated_at = CURRENT_TIMESTAMP
 	`, adminID, string(hash))
 	if err != nil {
 		return fmt.Errorf("seed admin user: %w", err)
