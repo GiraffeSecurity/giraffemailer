@@ -11,7 +11,8 @@ import (
 	"strings"
 )
 
-//go:embed dist
+// Next.js puts assets under dist/_next; plain //go:embed dist skips names starting with _.
+//go:embed all:dist
 var distFS embed.FS
 
 func Handler() http.Handler {

@@ -16,8 +16,8 @@ config.yaml
 
 # GiraffeMail runtime data
 data/
-giraffemail
-giraffemail-*
+/giraffemail
+/giraffemail-*
 
 # Test / coverage
 coverage.out

@@ -8,5 +8,5 @@ frontend/out
 internal/ui/dist
 coverage.out
 coverage.html
-giraffemail
-giraffemail-*
+/giraffemail
+/giraffemail-*
