@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM node:22-alpine AS ui
+FROM node:24-alpine AS ui
 WORKDIR /ui
 RUN corepack enable && corepack prepare pnpm@10 --activate
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
@@ -19,7 +19,7 @@ COPY . .
 COPY --from=ui /ui/out ./internal/ui/dist
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /giraffemail ./cmd/giraffemail
 
-FROM alpine:3.21
+FROM alpine:3.22
 RUN apk add --no-cache ca-certificates tzdata wget
 RUN addgroup -S giraffemail && adduser -S giraffemail -G giraffemail
 WORKDIR /app

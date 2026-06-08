@@ -5,7 +5,9 @@ package ui
 import (
 	"embed"
 	"io/fs"
+	"mime"
 	"net/http"
+	"path"
 	"strings"
 )
 
@@ -17,21 +19,54 @@ func Handler() http.Handler {
 	if err != nil {
 		panic("ui: dist embed is missing — run `make build-ui` first: " + err.Error())
 	}
-	fileServer := http.FileServer(http.FS(sub))
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		path := strings.TrimPrefix(r.URL.Path, "/")
-		if path == "" {
-			path = "index.html"
+		if r.Method != http.MethodGet && r.Method != http.MethodHead {
+			http.Error(w, "method not allowed", http.StatusMethodNotAllowed)
+			return
 		}
-		if _, err := sub.Open(path); err != nil {
-			if _, err := sub.Open(path + "/index.html"); err == nil {
-				r.URL.Path = "/" + path + "/index.html"
-			} else if _, err := sub.Open(path + ".html"); err == nil {
-				r.URL.Path = "/" + path + ".html"
-			} else {
-				r.URL.Path = "/index.html"
-			}
+		name := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+		if name == "" || name == "." {
+			name = "index.html"
 		}
-		fileServer.ServeHTTP(w, r)
+		resolved, err := resolve(sub, name)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		data, err := fs.ReadFile(sub, resolved)
+		if err != nil {
+			http.NotFound(w, r)
+			return
+		}
+		if ct := mime.TypeByExtension(path.Ext(resolved)); ct != "" {
+			w.Header().Set("Content-Type", ct)
+		}
+		w.WriteHeader(http.StatusOK)
+		if r.Method == http.MethodGet {
+			_, _ = w.Write(data)
+		}
 	})
+}
+
+func resolve(fsys fs.FS, name string) (string, error) {
+	if fileExists(fsys, name) {
+		return name, nil
+	}
+	if fileExists(fsys, name+"/index.html") {
+		return name + "/index.html", nil
+	}
+	if fileExists(fsys, name+".html") {
+		return name + ".html", nil
+	}
+	if !strings.Contains(path.Base(name), ".") {
+		if fileExists(fsys, "index.html") {
+			return "index.html", nil
+		}
+	}
+	return "", fs.ErrNotExist
+}
+
+func fileExists(fsys fs.FS, name string) bool {
+	info, err := fs.Stat(fsys, name)
+	return err == nil && !info.IsDir()
 }

@@ -5,15 +5,19 @@ on:
     branches: [main, master]
   pull_request:
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-go@v5
+      - uses: actions/setup-go@v6
         with:
           go-version-file: go.mod
+          check-latest: true
 
       - name: Go test
         run: go test ./... -race -count=1
@@ -30,14 +34,16 @@ jobs:
         with:
           version: 10
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: '22'
-          cache: 'pnpm'
+          node-version: 24
+          cache: pnpm
           cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Frontend test & build
         working-directory: frontend
+        env:
+          NEXT_OUTPUT: export
         run: |
           pnpm install --frozen-lockfile
           pnpm test run
@@ -46,6 +52,6 @@ jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Docker build
         run: docker build -t giraffemail:ci .

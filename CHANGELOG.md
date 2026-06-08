@@ -6,8 +6,9 @@ All notable changes to GiraffeMail Archive are documented here.
 
 ### Changed
 
-- Dependency upgrades: Go 1.26, Node 22, pnpm 10, latest npm packages
+- Dependency upgrades: Go 1.26, Node 24, pnpm 10, latest npm packages
 - Docker Compose loads `GM_SECRET_KEY` from `.env` (YAML fix)
+- CI: GitHub Actions v6, Node 24 runner, fix static UI serving (white screen)
 
 ## [0.1.0] — 2026-06-08
 

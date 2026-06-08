@@ -4,7 +4,7 @@
 
 [![CI](https://github.com/GiraffeSecurity/giraffemailer/actions/workflows/ci.yml/badge.svg)](https://github.com/GiraffeSecurity/giraffemailer/actions/workflows/ci.yml)
 [![License: AGPL v3](https://img.shields.io/badge/License-AGPL%20v3-blue.svg)](LICENSE)
-[![Go](https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white)](go.mod)
+[![Go](https://img.shields.io/badge/Go-1.26+-00ADD8?logo=go&logoColor=white)](go.mod)
 
 Built by [Giraffe.ge](https://giraffe.ge) · [Documentation](docs/README.md) · [Installation guide](docs/INSTALLATION.md) · [Report a bug](https://github.com/GiraffeSecurity/giraffemailer/issues/new?template=bug_report.yml)
 
@@ -111,7 +111,7 @@ Open **http://localhost:9191/gm** → login `admin@localhost` / `admin123` → *
 | Disk | 2× mail size | 2.5× mail size |
 | OS | Linux, macOS, Windows | Linux x86_64 |
 
-Build: Go 1.22+, Node 20+ & pnpm (UI build only).
+Build: Go 1.26+, Node 24 LTS & pnpm 10 (UI build only).
 
 ---
 

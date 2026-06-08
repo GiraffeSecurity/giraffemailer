@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -118,7 +119,14 @@ func NewRouter(deps Deps) http.Handler {
 		ok(w, map[string]string{"status": "ready"})
 	})
 
-	r.Handle("/*", ui.Handler())
+	uiHandler := ui.Handler()
+	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasPrefix(r.URL.Path, "/api/") {
+			http.NotFound(w, r)
+			return
+		}
+		uiHandler.ServeHTTP(w, r)
+	})
 
 	return r
 }
