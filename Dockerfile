@@ -9,7 +9,7 @@ COPY frontend/ ./
 ENV NEXT_OUTPUT=export
 RUN pnpm build
 
-FROM golang:1.24-bookworm AS builder
+FROM golang:1.26-bookworm AS builder
 ENV GOTOOLCHAIN=auto
 WORKDIR /src
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
