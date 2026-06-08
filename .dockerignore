@@ -1,0 +1,12 @@
+.git
+.github
+data
+*.db
+frontend/node_modules
+frontend/.next
+frontend/out
+internal/ui/dist
+coverage.out
+coverage.html
+giraffemail
+giraffemail-*

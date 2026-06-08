@@ -1,0 +1,56 @@
+# GiraffeMail Archive — example configuration
+# Copy to config.yaml and edit before first run.
+# Install guide: docs/INSTALLATION.md
+
+app:
+  # dev: relaxed validation, seed command enabled, text logs
+  # production: secret_key required, json logs
+  # Use 'dev' locally — no secret_key required, text logs, seed command enabled.
+  # Switch to 'production' and set secret_key before deploying.
+  env: dev
+
+  host: 0.0.0.0
+  port: 9191
+
+  # 64 hex characters = 32 bytes. Used for AES-256-GCM (IMAP credentials, blob encryption).
+  # Generate: openssl rand -hex 32
+  # REQUIRED in production mode. Never commit this value.
+  secret_key: ""
+
+security:
+  # Allowed browser origins for CORS (dev: Next.js on :3000). Same-origin UI needs no entry.
+  cors_allowed_origins:
+    - "http://localhost:3000"
+    - "http://127.0.0.1:3000"
+  # Set false in production to disable public signup (invite-only / seed admin).
+  allow_registration: true
+  # Set true when serving over HTTPS (required for Secure session cookies).
+  cookie_secure: false
+
+storage:
+  # Encrypt blobs in production (required when app.env: production).
+  data_dir: ./data
+
+  # Encrypt blob files at rest with the master key (zstd → AES-GCM).
+  # Adds ~12-byte nonce overhead per blob. Slightly slower read path.
+  encrypt_blobs: false
+
+archive:
+  # Number of mail accounts processed in parallel.
+  worker_count: 4
+
+  # Target bytes downloaded per IMAP batch fetch.
+  # Larger = fewer round-trips; smaller = lower peak memory.
+  batch_size_bytes: 8388608  # 8 MB
+
+smtp:
+  # Used to send OTP codes. Leave blank to disable email delivery in dev.
+  host: ""
+  port: 587
+  username: ""
+  password: ""
+  from: "GiraffeMail Archive <noreply@example.com>"
+
+log:
+  level: info    # debug | info | warn | error
+  format: text   # json | text  (text = human-readable in dev)

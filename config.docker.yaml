@@ -1,0 +1,23 @@
+app:
+  env: production
+  host: 0.0.0.0
+  port: 9191
+  # Set at runtime: docker run -e GM_SECRET_KEY=$(openssl rand -hex 32)
+  secret_key: ""
+
+security:
+  cors_allowed_origins: []
+  allow_registration: false
+  cookie_secure: false
+
+storage:
+  data_dir: /data
+  encrypt_blobs: true
+
+archive:
+  worker_count: 4
+  batch_size_bytes: 8388608
+
+log:
+  level: info
+  format: json

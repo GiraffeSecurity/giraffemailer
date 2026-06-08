@@ -1,0 +1,21 @@
+services:
+  giraffemail:
+    build: .
+    image: giraffemail:latest
+    ports:
+      - "9191:9191"
+    volumes:
+      - giraffemail-data:/data
+    environment:
+      TZ: UTC
+      GM_SECRET_KEY: ${GM_SECRET_KEY:?Set GM_SECRET_KEY to 64 hex chars}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:9191/readyz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+
+volumes:
+  giraffemail-data:
