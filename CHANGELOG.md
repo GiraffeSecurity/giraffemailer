@@ -2,12 +2,18 @@
 
 All notable changes to GiraffeMail Archive are documented here.
 
+## [Unreleased]
+
+### Changed
+
+- Dependency upgrades: Go 1.26, Node 22, pnpm 10, latest npm packages
+- Docker Compose loads `GM_SECRET_KEY` from `.env` (YAML fix)
+
 ## [0.1.0] — 2026-06-08
 
 First public release ([GiraffeSecurity/giraffemailer](https://github.com/GiraffeSecurity/giraffemailer)).
 
 ### Added
-
 - IMAP archive engine with incremental sync and zstd content-addressed blobs
 - Golden rule: server delete only after verified local archive
 - SQLite FTS5 search with keyset pagination

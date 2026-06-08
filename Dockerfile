@@ -1,15 +1,15 @@
 # syntax=docker/dockerfile:1
 
-FROM node:20-alpine AS ui
+FROM node:22-alpine AS ui
 WORKDIR /ui
-RUN corepack enable && corepack prepare pnpm@9 --activate
+RUN corepack enable && corepack prepare pnpm@10 --activate
 COPY frontend/package.json frontend/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY frontend/ ./
 ENV NEXT_OUTPUT=export
 RUN pnpm build
 
-FROM golang:1.23-bookworm AS builder
+FROM golang:1.24-bookworm AS builder
 ENV GOTOOLCHAIN=auto
 WORKDIR /src
 RUN apt-get update && apt-get install -y --no-install-recommends git && rm -rf /var/lib/apt/lists/*
@@ -19,7 +19,7 @@ COPY . .
 COPY --from=ui /ui/out ./internal/ui/dist
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /giraffemail ./cmd/giraffemail
 
-FROM alpine:3.20
+FROM alpine:3.21
 RUN apk add --no-cache ca-certificates tzdata wget
 RUN addgroup -S giraffemail && adduser -S giraffemail -G giraffemail
 WORKDIR /app
