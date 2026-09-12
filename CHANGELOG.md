@@ -10,6 +10,7 @@ All notable changes to GiraffeMail Archive are documented here.
 - `giraffemail seed` no longer overwrites an existing `admin@localhost` password on every run (including Docker restarts); use `seed --force` to reset to the default
 - Embedded / export UI builds use same-origin API calls by default (avoids CSP `connect-src 'self'` failures from a baked-in `localhost:9191`)
 - Docs: first-open URL is `/login`; Docker config path clarified (`config.docker.yaml` → `/etc/giraffemail/config.yaml`)
+- Bump Go toolchain to 1.26.6 for stdlib CVE fixes reported by govulncheck (GO-2026-6090, GO-2026-6089, GO-2026-5972, GO-2026-5856)
 
 ### Changed
 
