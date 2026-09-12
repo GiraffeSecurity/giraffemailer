@@ -54,7 +54,7 @@ docker compose exec giraffemail giraffemail seed --config /etc/giraffemail/confi
 
 ### 4. Open the UI
 
-Browse to **http://localhost:9191/gm**
+Browse to **http://localhost:9191/login**
 
 | Field | Default (seed) |
 |-------|----------------|
@@ -62,6 +62,8 @@ Browse to **http://localhost:9191/gm**
 | Password | `admin123` |
 
 **Change this password immediately** after first login (Settings → change password).
+
+> **Docker config:** The image copies `config.docker.yaml` to `/etc/giraffemail/config.yaml`. Do **not** rename `config.docker.yaml` on the host. The container entrypoint runs `migrate` + `seed` on every start; `seed` does not overwrite an existing admin password unless you pass `--force`.
 
 ### 5. Add your first mail account
 
@@ -153,7 +155,7 @@ make build
 ./giraffemail serve --config config.yaml
 ```
 
-Open **http://localhost:9191/gm** and log in with `admin@localhost` / `admin123`.
+Open **http://localhost:9191/login** and log in with `admin@localhost` / `admin123`.
 
 ### Development mode (hot-reload UI)
 
@@ -280,8 +282,8 @@ Messages are indexed during archive sync. Run **Sync** on the account and wait f
 
 | Symptom | Fix |
 |---------|-----|
-| Invalid credentials | Run `giraffemail seed --config config.yaml` (works on empty DB even in production/Docker) |
-| Credentials | `admin@localhost` / `admin123` after seed |
+| Invalid credentials | On a fresh DB run `giraffemail seed --config config.yaml`. If you forgot the admin password: `giraffemail seed --force --config config.yaml` (resets to `admin123`) |
+| Credentials | `admin@localhost` / `admin123` after first seed (not reset on later seeds without `--force`) |
 | UI says "Run make build-ui" | Run `make build-full` before `serve` |
 | Dev mode (`pnpm dev` on :3000) | API is proxied via Next.js — restart `pnpm dev` after pulling updates |
 | Embedded UI at `:9191` | Open the same host you configured (don't mix `localhost` and `127.0.0.1`) |

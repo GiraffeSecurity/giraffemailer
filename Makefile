@@ -31,7 +31,7 @@ release: build-linux build-darwin-arm64 build-darwin-amd64 build-windows
 
 ## Build the Next.js static export and copy it into internal/ui/dist/
 build-ui:
-	cd frontend && pnpm install && NEXT_OUTPUT=export pnpm build
+	cd frontend && pnpm install && NEXT_PUBLIC_GM_API_URL= NEXT_OUTPUT=export pnpm build
 	rm -rf internal/ui/dist
 	cp -r frontend/out internal/ui/dist
 

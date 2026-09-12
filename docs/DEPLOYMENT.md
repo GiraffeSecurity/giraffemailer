@@ -33,9 +33,9 @@ docker compose exec giraffemail giraffemail migrate --config /etc/giraffemail/co
 docker compose exec giraffemail giraffemail seed --config /etc/giraffemail/config.yaml
 ```
 
-Open **http://localhost:9191/gm** — default seed: `admin@localhost` / `admin123` (change immediately).
+Open **http://localhost:9191/login** — default seed: `admin@localhost` / `admin123` (change immediately in Settings).
 
-Data persists in the `giraffemail-data` Docker volume at `/data` inside the container.
+Data persists in the `giraffemail-data` Docker volume at `/data` inside the container. Re-running `seed` without `--force` does not reset the admin password.
 
 Environment overrides:
 
@@ -67,8 +67,9 @@ cp config.example.yaml /etc/giraffemail/config.yaml
 ./giraffemail serve --config /etc/giraffemail/config.yaml
 ```
 
-Default UI: `http://localhost:9191/gm`  
-Change the seed password immediately after first login.
+Default UI: `http://localhost:9191/login`  
+Change the seed password immediately after first login (Settings).  
+To reset a forgotten admin password: `./giraffemail seed --force --config /etc/giraffemail/config.yaml`
 
 ---
 

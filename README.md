@@ -86,7 +86,9 @@ docker compose exec giraffemail giraffemail migrate --config /etc/giraffemail/co
 docker compose exec giraffemail giraffemail seed --config /etc/giraffemail/config.yaml
 ```
 
-Open **http://localhost:9191/gm** → login `admin@localhost` / `admin123` → **change password immediately**.
+Open **http://localhost:9191/login** → login `admin@localhost` / `admin123` → **change password immediately** (Settings).
+
+The Docker image copies `config.docker.yaml` → `/etc/giraffemail/config.yaml`; do not rename `config.docker.yaml` on the host.
 
 **Full guide:** [docs/INSTALLATION.md](docs/INSTALLATION.md) (source build, binaries, troubleshooting, first IMAP account)
 
@@ -151,7 +153,7 @@ Environment overrides: `GM_SECRET_KEY`, `GM_DATA_DIR`, `GM_ENV`.
 |---------|-------------|
 | `serve` | Start HTTP server + embedded UI |
 | `migrate` | Run database migrations |
-| `seed` | Create initial admin user |
+| `seed` | Create admin user if missing (`--force` resets password) |
 | `fsck` | Verify all blobs against SHA-256 hashes |
 | `export` | CLI export utilities |
 
