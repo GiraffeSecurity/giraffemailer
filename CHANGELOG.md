@@ -4,6 +4,13 @@ All notable changes to GiraffeMail Archive are documented here.
 
 ## [Unreleased]
 
+### Fixed
+
+- Settings now includes a change-password form backed by `POST /api/v1/auth/change_password` (issue #1)
+- `giraffemail seed` no longer overwrites an existing `admin@localhost` password on every run (including Docker restarts); use `seed --force` to reset to the default
+- Embedded / export UI builds use same-origin API calls by default (avoids CSP `connect-src 'self'` failures from a baked-in `localhost:9191`)
+- Docs: first-open URL is `/login`; Docker config path clarified (`config.docker.yaml` → `/etc/giraffemail/config.yaml`)
+
 ### Changed
 
 - Dependency upgrades: Go 1.26, Node 24, pnpm 10, latest npm packages

@@ -18,11 +18,10 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"golang.org/x/crypto/bcrypt"
-	"github.com/gofrs/uuid/v5"
 )
 
 var cfgPath string
+var seedForce bool
 
 var rootCmd = &cobra.Command{
 	Use:   "giraffemail",
@@ -43,7 +42,7 @@ var migrateCmd = &cobra.Command{
 
 var seedCmd = &cobra.Command{
 	Use:   "seed",
-	Short: "Seed admin user + demo data (dev only)",
+	Short: "Create admin user if missing (use --force to reset password)",
 	RunE:  runSeed,
 }
 
@@ -63,6 +62,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&cfgPath, "config", "c", "config.yaml", "path to config file")
 	rootCmd.AddCommand(serveCmd, migrateCmd, seedCmd, fsckCmd, exportCmd)
 
+	seedCmd.Flags().BoolVar(&seedForce, "force", false, "reset admin@localhost password to default")
 	exportCmd.Flags().String("account", "", "account ID to export (required)")
 	exportCmd.Flags().String("format", "mbox", "output format: mbox | zip")
 	exportCmd.Flags().String("output", "", "output file path (default: <account>.<format>)")
@@ -223,35 +223,7 @@ func runSeed(cmd *cobra.Command, _ []string) error {
 	}
 	defer database.Close()
 
-	if cfg.App.Env == "production" {
-		var count int
-		if err := database.Conn.QueryRowContext(ctx, `SELECT COUNT(*) FROM users`).Scan(&count); err != nil {
-			return err
-		}
-		if count > 0 {
-			log.Warn().Msg("seed: production DB has users — resetting admin@localhost credentials only")
-		}
-	}
-
-	hash, err := bcrypt.GenerateFromPassword([]byte("admin123"), 12)
-	if err != nil {
-		return err
-	}
-	adminID := uuid.Must(uuid.NewV7()).String()
-	_, err = database.Conn.ExecContext(ctx, `
-		INSERT INTO users(id, email, password_hash, full_name, role, is_active)
-		VALUES (?, 'admin@localhost', ?, 'Admin', 'admin', 1)
-		ON CONFLICT(email) DO UPDATE SET
-			password_hash = excluded.password_hash,
-			role = 'admin',
-			is_active = 1,
-			updated_at = CURRENT_TIMESTAMP
-	`, adminID, string(hash))
-	if err != nil {
-		return fmt.Errorf("seed admin user: %w", err)
-	}
-	log.Info().Str("email", "admin@localhost").Str("password", "admin123").Msg("seed: admin user ready")
-	return nil
+	return seedAdmin(ctx, database.Conn, seedForce)
 }
 
 // ── fsck ──────────────────────────────────────────────────────────────────────
